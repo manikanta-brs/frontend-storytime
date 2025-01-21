@@ -1,4 +1,5 @@
 const PopularStories = ({ stories }) => {
+  // console.log(stories);
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-x-6">
       {stories.map((story) => {
@@ -9,7 +10,8 @@ const PopularStories = ({ stories }) => {
           >
             <div className="pt-[100%] relative mb-4">
               <img
-                src={story.url}
+                // popularShowsData.shows.items[0].images[1].url
+                src={story.images[1].url}
                 alt="Story image" // Added more descriptive alt text
                 className="absolute inset-0 object-cover w-full rounded-xl"
               />

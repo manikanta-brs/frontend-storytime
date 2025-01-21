@@ -1,23 +1,28 @@
 import { Link } from "react-router-dom";
 import { Formik, Form, Field, ErrorMessage } from "formik";
+import { useForgotPasswordAPIMutation } from "../store/user/userApiSlice";
 import * as Yup from "yup";
+import { toast } from "react-toastify";
 
 const initialValues = { email: "" };
-
-// Renamed to validationSchema for clarity
-const validationSchema = Yup.object().shape({
-  email: Yup.string().email("Invalid email").required("Email is required"),
+const validateSchema = Yup.object().shape({
+  email: Yup.string().required("Email is required").email("Email is invalid"),
 });
 
 const ForgotPasswordPage = () => {
-  const handleSubmit = (values, { setSubmitting, resetForm }) => {
-    setSubmitting(true);
-    // Simulate network request delay (replace with actual async logic)
-    setTimeout(() => {
-      console.log(values);
+  const [forgotPasswordAPI, { isLoading }] = useForgotPasswordAPIMutation();
+
+  const handleSubmit = async (values, { resetForm }) => {
+    try {
+      const response = await forgotPasswordAPI({
+        email: values.email,
+      }).unwrap();
+      toast.success(response.message);
+    } catch (error) {
+      toast.error(error?.data?.message || error.error);
+    } finally {
       resetForm();
-      setSubmitting(false);
-    }, 5000);
+    }
   };
 
   return (
@@ -30,7 +35,7 @@ const ForgotPasswordPage = () => {
           <div className="Auth-form-content">
             <Formik
               initialValues={initialValues}
-              validationSchema={validationSchema} // Changed to validationSchema
+              validationSchema={validateSchema}
               onSubmit={handleSubmit}
             >
               {({ isSubmitting }) => (
@@ -47,9 +52,8 @@ const ForgotPasswordPage = () => {
                       placeholder="Email Address"
                       className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     />
-                    {/* Updated error message styling */}
                     <ErrorMessage
-                      className="text-red-500"
+                      className="err_msg"
                       name="email"
                       component="div"
                     />
@@ -58,9 +62,9 @@ const ForgotPasswordPage = () => {
                   <div className="d-grid gap-2 mt-3 px-5 mb-4 mx-5">
                     <button
                       type="submit"
-                      disabled={isSubmitting} // Using isSubmitting instead of isLoading
+                      disabled={isLoading}
                       className={`block w-full py-2 px-4 rounded-xl btnPurpleColor ${
-                        isSubmitting
+                        isLoading
                           ? "bg-blue-400 cursor-not-allowed"
                           : "bg-blue-500 hover:bg-blue-700 text-white font-bold"
                       }`}
@@ -72,7 +76,7 @@ const ForgotPasswordPage = () => {
                   <div className="text-center text-sm text-black py-6 bg-gray-300 rounded-b-xl bg-opacity-20">
                     You don't have an account?
                     <Link
-                      className="font-medium text-purple-600 hover:text-purple-500 text-center py-2 ml-3 linkColor" // Removed greyColor
+                      className="greyColor font-medium text-purple-600 hover:text-purple-500 text-center py-2 ml-3 linkColor"
                       to="/register"
                     >
                       Sign Up

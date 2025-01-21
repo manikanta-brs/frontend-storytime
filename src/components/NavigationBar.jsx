@@ -118,7 +118,8 @@ const NavigationBar = () => {
               <li className="dropdown dropdown-6 relative">
                 {userData && (
                   <p className="text-white pr-2">
-                    Welcome back {userData.first_name}
+                    Welcome back{" "}
+                    {userData.first_name || userData?.profileData?.first_name}
                   </p>
                 )}
                 <NavLink to="/profile" className="flex items-center">

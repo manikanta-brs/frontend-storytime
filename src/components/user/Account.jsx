@@ -5,6 +5,9 @@ import { useUpdateUserProfileAPIMutation } from "../../store/user/userApiSlice";
 import { updateUserProfile } from "../../store/user/authSlice";
 import { toast } from "react-toastify";
 import * as Yup from "yup";
+import { useEffect } from "react";
+
+// Inside the component
 
 const userSchema = Yup.object().shape({
   first_name: Yup.string()
@@ -23,26 +26,53 @@ const Account = () => {
   const [updateUserProfileAPI, { isLoading }] =
     useUpdateUserProfileAPIMutation();
   const { userData } = useSelector((state) => state.auth);
+  useEffect(() => {
+    // Optionally, check or log userData
+    console.log(userData);
+  }, [userData]); // This will trigger whenever userData is updated
 
   // initial values
   const initialValues = {
-    first_name: userData.first_name,
-    last_name: userData.last_name,
-    email: userData.email,
+    first_name: userData.profileData.first_name,
+    last_name: userData.profileData.last_name,
+    email: userData.profileData.email,
+    languages: userData.profileData.languages,
   };
 
+  // const handleSubmit = async (values) => {
+  //   try {
+  //     const response = await updateUserProfileAPI({
+  //       first_name: values.first_name,
+  //       last_name: values.last_name,
+  //     }).unwrap();
+  //     dispatch(
+  //       updateUserProfile({
+  //         first_name: values.first_name,
+  //         last_name: values.last_name,
+  //       })
+  //     );
+  //     toast.success(response.message);
+  //   } catch (error) {
+  //     toast.error(error?.data?.message || error.error);
+  //   }
+  // };
   const handleSubmit = async (values) => {
     try {
       const response = await updateUserProfileAPI({
         first_name: values.first_name,
         last_name: values.last_name,
       }).unwrap();
+
+      // Dispatch updated profile data to Redux
       dispatch(
         updateUserProfile({
           first_name: values.first_name,
           last_name: values.last_name,
+          email: values.email, // add any other fields
+          languages: values.languages || null,
         })
       );
+
       toast.success(response.message);
     } catch (error) {
       toast.error(error?.data?.message || error.error);

@@ -51,12 +51,30 @@ export const userAPISlice = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
+    // resetPasswordAPI: builder.mutation({
+    //   query: ({ token, password }) => ({
+    //     url: `${USER_ENDPOINT}/resetpassword/${token}`,
+    //     method: "POST",
+    //     body: { password },
+    //   }),
+    // }),
+
     resetPasswordAPI: builder.mutation({
-      query: ({ token, password }) => ({
-        url: `${USER_ENDPOINT}/resetpassword/${token}`,
-        method: "POST",
-        body: { password },
-      }),
+      query: ({ token, password }) => {
+        const url = `${USER_ENDPOINT}/resetpassword/${token}`; // The USER_ENDPOINT should be configured in your backend
+
+        console.log("Request URL:", url);
+        console.log("Request Body:", { password });
+
+        return {
+          url: url,
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`, // Optionally, pass a Bearer token if needed
+          },
+          body: { password },
+        };
+      },
     }),
 
     saveStoryAPI: builder.mutation({

@@ -86,7 +86,7 @@ const LoginPage = () => {
               validationSchema={validationSchema}
               onSubmit={handleSubmit}
             >
-              {({ isSubmitting }) => (
+              {({ isSubmitting, values }) => (
                 <Form noValidate>
                   <h3 className="Auth-form-title py-4 text-center">Sign In</h3>
                   <hr />
@@ -120,6 +120,7 @@ const LoginPage = () => {
                   </div>
 
                   <div className="p-3 px-5">
+                    {/* Show/Hide Password Toggle */}
                     <div className="flex items-center mt-3">
                       <label className="inline-flex items-center cursor-pointer">
                         <input
@@ -133,6 +134,35 @@ const LoginPage = () => {
                           {showPassword ? "Show Password " : "Hide Password"}
                         </span>
                       </label>
+                    </div>
+
+                    {/* Remember Me and Forgot Password */}
+                    <div className="flex justify-between items-center mt-3">
+                      {/* Remember Me Checkbox */}
+                      <div className="flex items-center">
+                        <Field
+                          name="rememberme"
+                          type="checkbox"
+                          className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                        />
+                        <label
+                          htmlFor="rememberme"
+                          className="ml-2 text-sm text-gray-900 rounded"
+                        >
+                          Remember me
+                        </label>
+                        {/* Checkbox Status */}
+                      </div>
+
+                      {/* Forgot Password Link */}
+                      <div className="text-sm">
+                        <Link
+                          className="font-medium linkColor hover:text-purple-500"
+                          to={"/forgotpassword"}
+                        >
+                          Forgot your password?
+                        </Link>
+                      </div>
                     </div>
                   </div>
 

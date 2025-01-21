@@ -9,7 +9,7 @@ const TopStories = ({ stories }) => {
           >
             <div className="pt-[100%] relative mb-4">
               <img
-                src={story.url}
+                src={story.images[1].url}
                 alt="Story image" // Added more descriptive alt text
                 className="absolute inset-0 object-cover w-full rounded-xl"
               />
