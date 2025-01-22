@@ -33,10 +33,10 @@ const Account = () => {
 
   // initial values
   const initialValues = {
-    first_name: userData.profileData.first_name,
-    last_name: userData.profileData.last_name,
-    email: userData.profileData.email,
-    languages: userData.profileData.languages,
+    first_name: userData?.profileData?.first_name,
+    last_name: userData?.profileData?.last_name,
+    email: userData?.profileData?.email,
+    languages: userData?.profileData?.languages || userData.languages,
   };
 
   // const handleSubmit = async (values) => {

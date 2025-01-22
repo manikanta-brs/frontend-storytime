@@ -160,13 +160,16 @@ const authSlice = createSlice({
     toggleLanguageSelection: (state, action) => {
       try {
         const languageId = action.payload;
-        const index = state.userData.languages.indexOf(languageId);
+        const index = state.userData.profileData.languages.indexOf(languageId);
         if (index === -1) {
-          state.userData.languages.push(languageId);
+          state.userData.profileData.languages.push(languageId);
         } else {
-          state.userData.languages.splice(index, 1);
+          state.userData.profileData.languages.splice(index, 1);
         }
-        localStorage.setItem("userData", JSON.stringify(state.userData));
+        localStorage.setItem(
+          "userData",
+          JSON.stringify(state.userData.profileData)
+        );
       } catch (error) {
         console.error(
           "Failed to update language selection in localStorage:",

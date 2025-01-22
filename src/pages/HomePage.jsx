@@ -129,7 +129,8 @@ import LoadingSpinner from "../components/LoadingSpinner.jsx";
 // ];
 const HomePage = () => {
   const dispatch = useDispatch();
-  const { data } = useGetUserProfileAPIQuery();
+  const { data: userProfileData, isLoading: isUserProfileLoading } =
+    useGetUserProfileAPIQuery();
   const { userData } = useSelector((state) => state.auth);
   // console.log(data);
   // console.log(userData);
@@ -199,21 +200,38 @@ const HomePage = () => {
   //     );
   //   }
   // }, [data, dispatch, userData]);
+  // useEffect(() => {
+  //   if (data) {
+  //     // Merge the userData with the new profile data and language
+  //     dispatch(
+  //       setUserProfile({
+  //         ...data, // Fetched data
+  //         profileData: {
+  //           ...userData.profileData, // Keep the existing profileData
+  //           ...data.profileData, // Merge with fetched profileData
+  //         },
+  //         languages: userData.languages || data.languages, // Retain updated preferences
+  //       })
+  //     );
+  //   }
+  // }, [data, dispatch]); // Only depend on data and dispatch
   useEffect(() => {
-    if (data) {
-      // Merge the userData with the new profile data and language
-      dispatch(
-        setUserProfile({
-          ...data, // Fetched data
-          profileData: {
-            ...userData.profileData, // Keep the existing profileData
-            ...data.profileData, // Merge with fetched profileData
-          },
-          languages: userData.languages || data.languages, // Retain updated preferences
-        })
-      );
+    if (data && !isUserProfileLoading) {
+      // Only update if there's new data and it's not already in the state
+      if (userData?.profileData?.languages !== data?.profileData?.languages) {
+        dispatch(
+          setUserProfile({
+            ...data, // Fetched data
+            profileData: {
+              ...userData?.profileData, // Retain existing profile data
+              ...data?.profileData, // Merge fetched profile data
+            },
+            languages: userData?.languages || data?.languages, // Retain updated preferences
+          })
+        );
+      }
     }
-  }, [data, dispatch]); // Only depend on data and dispatch
+  }, [data, dispatch, isUserProfileLoading]); // Remove userData from dependencies
   useEffect(() => {
     if (popularShowsData) {
       const nonExplicitPopularStories = popularShowsData.shows.items.filter(

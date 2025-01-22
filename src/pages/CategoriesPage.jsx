@@ -1,6 +1,15 @@
 import { useGetCategoriesQuery } from "../store/category/categoryApiSlice";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { useGetLanguagesQuery } from "../store/language/languageApiSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { useUpdateLanguageAPIMutation } from "../store/user/userApiSlice";
+import {
+  toggleLanguageSelection,
+  setUserProfile,
+} from "../store/user/authSlice"; // Import setUserProfile
+import { toast } from "react-toastify";
+import { useGetUserProfileAPIQuery } from "../store/user/userApiSlice"; // Import the hook
+import { useEffect } from "react";
 
 // const languages = [
 //   { _id: 1, code: "ta", name: "Telugu" },
@@ -26,13 +35,104 @@ import { useGetLanguagesQuery } from "../store/language/languageApiSlice";
 // ];
 
 const CategoriesPage = () => {
+  const dispatch = useDispatch();
   const { data: categories, isLoading, error } = useGetCategoriesQuery();
+  const { userData } = useSelector((state) => state.auth);
+  const [useUpdateLanguageAPI, { isLoading: languageUpdateLoading }] =
+    useUpdateLanguageAPIMutation();
+  console.log("userdata:", userData); // Log the object properly
   const {
     data: languages,
     isLoading: isLanguagesLoading,
     error: languagesError,
   } = useGetLanguagesQuery();
-  console.log(categories);
+  // console.log(categories);
+  // const isLanguageSelected = (languageId) =>
+  //   userData.languages && userData.languages.includes(languageId);
+  const isLanguageSelected = (languageId) =>
+    userData?.profileData?.languages?.includes(languageId);
+
+  const { data: userProfileData, isLoading: isUserProfileLoading } =
+    useGetUserProfileAPIQuery();
+  // console.log(userProfileData);
+  // useEffect(() => {
+  //   if (userProfileData) {
+  //     dispatch(
+  //       setUserProfile({
+  //         ...userProfileData, // Fetched data
+  //         profileData: {
+  //           ...userData?.profileData, // Keep the existing profileData
+  //           ...userProfileData?.profileData, // Merge with fetched profileData
+  //         },
+  //         languages: userData?.languages || userProfileData?.languages, // Retain updated preferences
+  //       })
+  //     );
+  //   }
+  // }, [userProfileData, dispatch]);
+  useEffect(() => {
+    if (userProfileData && !isUserProfileLoading) {
+      // Only update if there's new data and it's not already in the state
+      if (
+        userData?.profileData?.languages !==
+        userProfileData?.profileData?.languages
+      ) {
+        dispatch(
+          setUserProfile({
+            ...userData, // Keep existing user data
+            profileData: {
+              ...userData?.profileData, // Retain existing profile data
+              ...userProfileData?.profileData, // Merge fetched profile data
+            },
+            languages: userData?.languages || userProfileData?.languages, // Retain updated preferences
+          })
+        );
+      }
+    }
+  }, [userProfileData, dispatch, isUserProfileLoading]); // Remove userData from dependencies
+
+  // const handleLanguageClick = async (languageId) => {
+  //   try {
+  //     const response = await useUpdateLanguageAPI({
+  //       languageIds: userData.languages,
+  //     }).unwrap();
+  //     toast.success("Language preference updated successfully");
+  //     if (userData.languages) {
+  //       dispatch(toggleLanguageSelection(languageId));
+  //     }
+  //   } catch (error) {
+  //     toast.error("Failed to update language preference");
+  //     // console.log(error);
+  //   }
+
+  //   // console.log(languageId);
+  //   // console.log(userData);
+  // };
+  const handleLanguageClick = async (languageId) => {
+    try {
+      // Create a new array of selected languages
+      const updatedLanguages = userData?.languages?.includes(languageId)
+        ? userData.languages.filter((id) => id !== languageId) // Remove if already selected
+        : [...(userData?.languages || []), languageId]; // Add if not selected
+
+      // Update backend
+      await useUpdateLanguageAPI({
+        languageIds: updatedLanguages,
+      }).unwrap();
+
+      // Update Redux store
+      dispatch(
+        setUserProfile({
+          ...userData,
+          languages: updatedLanguages, // Update languages in Redux
+        })
+      );
+
+      toast.success("Language preference updated successfully");
+    } catch (error) {
+      toast.error("Failed to update language preference");
+      console.error(error);
+    }
+  };
   return (
     <>
       <div style={{ backgroundColor: "#443280" }}>
@@ -45,7 +145,7 @@ const CategoriesPage = () => {
                 </h3>
               </header>
               <div className="flex mb-10">
-                {isLanguagesLoading ? (
+                {isLanguagesLoading || isUserProfileLoading ? (
                   <LoadingSpinner />
                 ) : languagesError ? (
                   <p>Unable to load the languages, Please try again</p>
@@ -53,25 +153,35 @@ const CategoriesPage = () => {
                   <>
                     {languages &&
                       languages.map((language) => (
-                        <div
-                          key={language._id}
-                          className="flex items-center px-2 py-2 text-white font-medium bg-blue-600 hover:bg-white hover:text-black rounded-md mr-3"
-                        >
-                          {language.name}
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            strokeWidth="1.5"
-                            stroke="currentColor"
-                            className="w-6 h-6 ml-3"
+                        <div key={language._id}>
+                          <button
+                            className={`flex ${
+                              isLanguageSelected(language._id)
+                                ? "bg-white text-black"
+                                : "text-white"
+                            }  px-3 py-1 rounded-full mr-3`}
+                            onClick={() => handleLanguageClick(language._id)}
                           >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="M6 18L18 6M6 6l12 12"
-                            />
-                          </svg>
+                            {language.name}
+                            {isLanguageSelected(language._id) ? (
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                strokeWidth="1.5"
+                                stroke="currentColor"
+                                className="w-6 h-6 ml-3"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  d="M6 18L18 6M6 6l12 12"
+                                />
+                              </svg>
+                            ) : (
+                              ""
+                            )}
+                          </button>
                         </div>
                       ))}
                   </>

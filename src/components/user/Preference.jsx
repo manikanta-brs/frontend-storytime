@@ -128,17 +128,18 @@ Array(0)
     useUpdateLanguageAPIMutation();
 
   const isLanguageSelected = (languageId) =>
-    userData.languages && userData.languages.includes(languageId);
+    userData?.profileData?.languages &&
+    userData?.profileData?.languages.includes(languageId);
 
   // const handleLanguageClick = (languageId) => {
   //   dispatch(toggleLanguageSelection(languageId));
   // };
   const handleLanguageClick = (languageId) => {
-    if (userData.languages) {
+    if (userData.profileData.languages) {
       dispatch(toggleLanguageSelection(languageId));
     }
     // console.log(languageId);
-    console.log(userData);
+    console.log(userData.profileData);
   };
 
   // const submitHandler = async () => {
@@ -152,19 +153,39 @@ Array(0)
   //     toast.error(error?.data?.message || error.error);
   //   }
   // };
+  /*works fine*/
+  // const submitHandler = async () => {
+  //   try {
+  //     const response = await updateLanguageAPI({
+  //       languageIds: userData.languages,
+  //     }).unwrap();
+
+  //     toast.success(response.message);
+  //     dispatch(setUserProfile({ ...userData, languages: userData.languages })); // Update Redux with the latest languages
+  //   } catch (error) {
+  //     toast.error(error?.data?.message || error.error);
+  //   }
+  // };
   const submitHandler = async () => {
     try {
       const response = await updateLanguageAPI({
-        languageIds: userData.languages,
+        languageIds: userData.profileData.languages, // Use profileData.languages
       }).unwrap();
 
       toast.success(response.message);
-      dispatch(setUserProfile({ ...userData, languages: userData.languages })); // Update Redux with the latest languages
+      dispatch(
+        setUserProfile({
+          ...userData,
+          profileData: {
+            ...userData.profileData,
+            languages: userData.profileData.languages, // Use profileData.languages
+          },
+        })
+      );
     } catch (error) {
       toast.error(error?.data?.message || error.error);
     }
   };
-
   return (
     <div>
       <Formik>
