@@ -169,6 +169,8 @@ const HomePage = () => {
         limit: "25",
       },
     });
+  console.log("userProfileData:", userProfileData);
+  console.log("userData:", userData);
   // console.log(popularShowsData.shows.items.images);
   // useEffect(() => {
   //   if (data) {
@@ -216,22 +218,25 @@ const HomePage = () => {
   //   }
   // }, [data, dispatch]); // Only depend on data and dispatch
   useEffect(() => {
-    if (data && !isUserProfileLoading) {
+    if (userProfileData && !isUserProfileLoading) {
       // Only update if there's new data and it's not already in the state
-      if (userData?.profileData?.languages !== data?.profileData?.languages) {
+      if (
+        JSON.stringify(userData?.profileData?.languages) !==
+        JSON.stringify(userProfileData?.profileData?.languages)
+      ) {
         dispatch(
           setUserProfile({
-            ...data, // Fetched data
+            ...userData, // Keep existing user data
             profileData: {
               ...userData?.profileData, // Retain existing profile data
-              ...data?.profileData, // Merge fetched profile data
+              ...userProfileData?.profileData, // Merge fetched profile data
+              languages: userProfileData?.profileData?.languages, // Use languages from fetched profile data
             },
-            languages: userData?.languages || data?.languages, // Retain updated preferences
           })
         );
       }
     }
-  }, [data, dispatch, isUserProfileLoading]); // Remove userData from dependencies
+  }, [userProfileData, dispatch, isUserProfileLoading]); // Remove userData from dependencies // Remove userData from dependencies
   useEffect(() => {
     if (popularShowsData) {
       const nonExplicitPopularStories = popularShowsData.shows.items.filter(

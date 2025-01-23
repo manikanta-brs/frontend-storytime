@@ -3,8 +3,9 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import { useSelector, useDispatch } from "react-redux";
 import { useUpdateUserProfileAPIMutation } from "../../store/user/userApiSlice";
 import { updateUserProfile } from "../../store/user/authSlice";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import * as Yup from "yup";
+// import toast from "react-hot-toast";
 import { useEffect } from "react";
 
 // Inside the component
@@ -30,13 +31,12 @@ const Account = () => {
     // Optionally, check or log userData
     console.log(userData);
   }, [userData]); // This will trigger whenever userData is updated
-
   // initial values
   const initialValues = {
     first_name: userData?.profileData?.first_name,
     last_name: userData?.profileData?.last_name,
     email: userData?.profileData?.email,
-    languages: userData?.profileData?.languages || userData.languages,
+    languages: userData?.profileData?.languages || userData?.languages,
   };
 
   // const handleSubmit = async (values) => {
@@ -62,7 +62,8 @@ const Account = () => {
         first_name: values.first_name,
         last_name: values.last_name,
       }).unwrap();
-
+      console.log(response.message);
+      toast.success(response.message);
       // Dispatch updated profile data to Redux
       dispatch(
         updateUserProfile({
@@ -72,15 +73,15 @@ const Account = () => {
           languages: values.languages || null,
         })
       );
-
-      toast.success(response.message);
     } catch (error) {
-      toast.error(error?.data?.message || error.error);
+      toast.error(error?.data?.message || error.message || "An error occurred");
     }
   };
 
   return (
     <div>
+      <ToastContainer />
+
       <Formik
         initialValues={initialValues}
         validationSchema={userSchema}

@@ -3,7 +3,6 @@ import "react-best-tabs/dist/index.css";
 import Account from "../components/user/Account";
 import Preference from "../components/user/Preference";
 import UpdatePassword from "../components/user/UpdatePassword";
-
 const ProfilePage = () => {
   return (
     <>

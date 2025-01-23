@@ -1,96 +1,89 @@
+// To render the /authors page component
+import { useEffect, useState } from "react";
 import AuthorsList from "../components/authors/AuthorsList";
+import { useGetCategoriesQuery } from "../store/category/categoryApiSlice";
+import { useGetLanguagesQuery } from "../store/language/languageApiSlice";
+import { useGetAuthorsStoriesQuery } from "../store/spotify/spotifyApiSlice";
+import LoadingSpinner from "../components/LoadingSpinner";
 
-const authorsList = [
-  {
-    id: 1,
-    url: "./images/image.png",
-    name: "sam",
-    publisher: "someone1",
-  },
-  {
-    id: 2,
-    url: "./images/image.png",
-    name: "john",
-    publisher: "someone2",
-  },
+const AuthorsPage = () => {
+  const [categoryNames, setCategoryNames] = useState([]);
+  const [languageNames, setLanguageNames] = useState([]);
+  const [authorsList, setAuthorsList] = useState([]);
 
-  {
-    id: 3,
-    url: "./images/image.png",
-    name: "sarah",
-    publisher: "someone3",
-  },
+  // API Query
+  const { data: categoriesData } = useGetCategoriesQuery();
+  const { data: languagesData } = useGetLanguagesQuery();
+  const {
+    data: authorsData,
+    isLoading: authorsIsLoading,
+    isError: authorsIsError,
+  } = useGetAuthorsStoriesQuery(
+    {
+      queryParams: {
+        q: `"${categoryNames}" languages: ${languageNames}`,
+        type: "show",
+        include_external: "audio",
+        market: "IN",
+        limit: "50",
+      },
+    },
+    {
+      skip: !categoryNames || !languageNames, // Skip the query if categoryNames or languageNames are missing
+    }
+  );
 
-  {
-    id: 4,
-    url: "./images/image.png",
-    name: "jane",
-    publisher: "someone4",
-  },
+  // Filter the explicit stories based on explicit property (this property will be present in response data)
+  useEffect(() => {
+    if (authorsData && authorsData.shows && authorsData.shows.items) {
+      const nonExplicitAuthorsStories = authorsData.shows.items.filter(
+        (story) => !story.explicit
+      );
 
-  {
-    id: 5,
-    url: "./images/image.png",
-    name: "bill",
-    publisher: "someone5",
-  },
+      setAuthorsList(nonExplicitAuthorsStories);
+    } else {
+      setAuthorsList([]);
+    }
+  }, [authorsData]);
 
-  {
-    id: 6,
-    url: "./images/image.png",
-    name: "tom",
-    publisher: "someone6",
-  },
+  // format the category names (joining all names with ,)
+  useEffect(() => {
+    // if (categoriesData) {
+    //   const formattedCategoryNames = categoriesData
+    //     .map((category) => `"${category.category}"`)
+    //     .join(", ");
 
-  {
-    id: 7,
-    url: "./images/image.png",
-    name: "sarah",
-    publisher: "someone7",
-  },
+    //   setCategoryNames(formattedCategoryNames);
+    // }
+    if (languagesData) {
+      const formattedLanguageNames = languagesData
+        .map((language) => `"${language.name}"`)
+        .join(", ");
 
-  {
-    id: 8,
-    url: "./images/image.png",
-    name: "mike",
-    publisher: "someone8",
-  },
+      setLanguageNames(formattedLanguageNames);
+    }
+  }, [categoriesData]);
+  if (authorsIsError) {
+    return (
+      <div className="text-center my-16 text-red-500">
+        Failed to load authors. Please try again later.
+      </div>
+    );
+  }
 
-  {
-    id: 9,
-    url: "./images/image.png",
-    name: "jerry",
-    publisher: "someone9",
-  },
-
-  {
-    id: 10,
-    url: "./images/image.png",
-    name: "peter",
-    publisher: "someone10",
-  },
-
-  {
-    id: 11,
-    url: "./images/image.png",
-    name: "jerry",
-    publisher: "someone11",
-  },
-
-  {
-    id: 12,
-    url: "./images/image.png",
-    name: "jerry",
-    publisher: "someone12",
-  },
-];
-AuthorsList;
-const AuthosPage = () => {
   return (
     <div className="container mx-auto mt-5 px-5">
-      <AuthorsList authors={authorsList} />
+      {authorsIsLoading ? (
+        <LoadingSpinner />
+      ) : authorsList?.length > 0 ? (
+        <AuthorsList authors={authorsList} />
+      ) : (
+        <p className="text-center my-16">
+          No Stories to load, please try later
+        </p>
+      )}
     </div>
   );
 };
 
-export default AuthosPage;
+export default AuthorsPage;

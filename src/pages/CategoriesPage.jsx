@@ -10,6 +10,7 @@ import {
 import { toast } from "react-toastify";
 import { useGetUserProfileAPIQuery } from "../store/user/userApiSlice"; // Import the hook
 import { useEffect } from "react";
+import { useNavigate } from "react-router";
 
 // const languages = [
 //   { _id: 1, code: "ta", name: "Telugu" },
@@ -35,6 +36,7 @@ import { useEffect } from "react";
 // ];
 
 const CategoriesPage = () => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const { data: categories, isLoading, error } = useGetCategoriesQuery();
   const { userData } = useSelector((state) => state.auth);
@@ -50,7 +52,7 @@ const CategoriesPage = () => {
   // const isLanguageSelected = (languageId) =>
   //   userData.languages && userData.languages.includes(languageId);
   const isLanguageSelected = (languageId) =>
-    userData?.profileData?.languages?.includes(languageId);
+    userData?.profileData?.languages?.includes(languageId); // Always use profileData.languages
 
   const { data: userProfileData, isLoading: isUserProfileLoading } =
     useGetUserProfileAPIQuery();
@@ -69,26 +71,27 @@ const CategoriesPage = () => {
   //     );
   //   }
   // }, [userProfileData, dispatch]);
-  useEffect(() => {
-    if (userProfileData && !isUserProfileLoading) {
-      // Only update if there's new data and it's not already in the state
-      if (
-        userData?.profileData?.languages !==
-        userProfileData?.profileData?.languages
-      ) {
-        dispatch(
-          setUserProfile({
-            ...userData, // Keep existing user data
-            profileData: {
-              ...userData?.profileData, // Retain existing profile data
-              ...userProfileData?.profileData, // Merge fetched profile data
-            },
-            languages: userData?.languages || userProfileData?.languages, // Retain updated preferences
-          })
-        );
-      }
-    }
-  }, [userProfileData, dispatch, isUserProfileLoading]); // Remove userData from dependencies
+  /*works fine just change for userData*/
+  // useEffect(() => {
+  //   if (userProfileData && !isUserProfileLoading) {
+  //     // Only update if there's new data and it's not already in the state
+  //     if (
+  //       userData?.profileData?.languages !==
+  //       userProfileData?.profileData?.languages
+  //     ) {
+  //       dispatch(
+  //         setUserProfile({
+  //           ...userData, // Keep existing user data
+  //           profileData: {
+  //             ...userData?.profileData, // Retain existing profile data
+  //             ...userProfileData?.profileData, // Merge fetched profile data
+  //           },
+  //           languages: userData?.languages || userProfileData?.languages, // Retain updated preferences
+  //         })
+  //       );
+  //     }
+  //   }
+  // }, [userProfileData, dispatch, isUserProfileLoading]); // Remove userData from dependencies
 
   // const handleLanguageClick = async (languageId) => {
   //   try {
@@ -107,23 +110,87 @@ const CategoriesPage = () => {
   //   // console.log(languageId);
   //   // console.log(userData);
   // };
+  // const handleLanguageClick = async (languageId) => {
+  //   try {
+  //     // Create a new array of selected languages
+  //     const updatedLanguages = userData?.languages?.includes(languageId)
+  //       ? userData.languages.filter((id) => id !== languageId) // Remove if already selected
+  //       : [...(userData?.languages || []), languageId]; // Add if not selected
+
+  //     // Update backend
+  //     await useUpdateLanguageAPI({
+  //       languageIds: updatedLanguages,
+  //     }).unwrap();
+
+  //     // Update Redux store
+  //     dispatch(
+  //       setUserProfile({
+  //         ...userData,
+  //         languages: updatedLanguages, // Update languages in Redux
+  //       })
+  //     );
+
+  //     toast.success("Language preference updated successfully");
+  //   } catch (error) {
+  //     toast.error("Failed to update language preference");
+  //     console.error(error);
+  //   }
+  // };// works fine
+  const categoryHandler = (categoryName) => {
+    navigate("/stories", { state: { categoryName } });
+  };
+  useEffect(() => {
+    if (userProfileData && !isUserProfileLoading) {
+      // Only update if there's new data and it's not already in the state
+      if (
+        JSON.stringify(userData?.profileData?.languages) !==
+        JSON.stringify(userProfileData?.profileData?.languages)
+      ) {
+        dispatch(
+          setUserProfile({
+            ...userData, // Keep existing user data
+            profileData: {
+              ...userData?.profileData, // Retain existing profile data
+              ...userProfileData?.profileData, // Merge fetched profile data
+              languages: userProfileData?.profileData?.languages, // Always use profileData.languages
+            },
+          })
+        );
+      }
+    }
+  }, [userProfileData, dispatch, isUserProfileLoading]); // Remove userData from dependencies
   const handleLanguageClick = async (languageId) => {
     try {
-      // Create a new array of selected languages
-      const updatedLanguages = userData?.languages?.includes(languageId)
-        ? userData.languages.filter((id) => id !== languageId) // Remove if already selected
-        : [...(userData?.languages || []), languageId]; // Add if not selected
+      // Create a new array of selected languages from profileData.languages
+      const updatedLanguages = userData?.profileData?.languages?.includes(
+        languageId
+      )
+        ? userData.profileData.languages.filter((id) => id !== languageId) // Remove if already selected
+        : [...(userData?.profileData?.languages || []), languageId]; // Add if not selected
 
-      // Update backend
+      // Update backend with the new languages
       await useUpdateLanguageAPI({
         languageIds: updatedLanguages,
       }).unwrap();
 
-      // Update Redux store
+      // // Update Redux store with the new profileData.languages
+      // dispatch(
+      //   setUserProfile({
+      //     ...userData,
+      //     profileData: {
+      //       ...userData?.profileData,
+      //       languages: updatedLanguages, // Update languages within profileData
+      //     },
+      //   })
+      // );
+      /*userData changes*/
       dispatch(
         setUserProfile({
           ...userData,
-          languages: updatedLanguages, // Update languages in Redux
+          profileData: {
+            ...userData?.profileData,
+            languages: updatedLanguages, // Only update profileData.languages
+          },
         })
       );
 
@@ -229,7 +296,7 @@ const CategoriesPage = () => {
                       className={`p-6 rounded-xl hover:bg-active group active h-64 text-3xl flex items-end siraledge category-${
                         index + 1
                       }`}
-                      onClick={() => {}}
+                      onClick={() => categoryHandler(category.category)}
                     >
                       <button className="text-left">{category.category}</button>
                     </div>

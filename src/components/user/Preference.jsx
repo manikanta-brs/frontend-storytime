@@ -91,9 +91,12 @@ import { Formik, Form } from "formik";
 import { useGetLanguagesQuery } from "../../store/language/languageApiSlice";
 import { useSelector, useDispatch } from "react-redux";
 import LoadingSpinner from "../LoadingSpinner";
-import { toggleLanguageSelection } from "../../store/user/authSlice";
+import {
+  setUserProfile,
+  toggleLanguageSelection,
+} from "../../store/user/authSlice";
 import { useUpdateLanguageAPIMutation } from "../../store/user/userApiSlice";
-import { toast } from "react-toastify";
+import { toast, Toaster } from "react-hot-toast";
 
 const Preference = () => {
   const dispatch = useDispatch();
@@ -126,20 +129,22 @@ Array(0)
   */
   const [updateLanguageAPI, { isLoading: languageUpdateLoading }] =
     useUpdateLanguageAPIMutation();
-
+  // userData changes
+  // const isLanguageSelected = (languageId) =>
+  //   userData?.profileData?.languages &&
+  //   userData?.profileData?.languages.includes(languageId);
   const isLanguageSelected = (languageId) =>
-    userData?.profileData?.languages &&
-    userData?.profileData?.languages.includes(languageId);
+    userData?.profileData?.languages?.includes(languageId); // Always use profileData.languages
 
   // const handleLanguageClick = (languageId) => {
   //   dispatch(toggleLanguageSelection(languageId));
   // };
   const handleLanguageClick = (languageId) => {
-    if (userData.profileData.languages) {
+    if (userData?.profileData?.languages) {
       dispatch(toggleLanguageSelection(languageId));
     }
     // console.log(languageId);
-    console.log(userData.profileData);
+    // console.log(userData.profileData);
   };
 
   // const submitHandler = async () => {
@@ -169,7 +174,7 @@ Array(0)
   const submitHandler = async () => {
     try {
       const response = await updateLanguageAPI({
-        languageIds: userData.profileData.languages, // Use profileData.languages
+        languageIds: userData?.profileData?.languages, // Use profileData.languages
       }).unwrap();
 
       toast.success(response.message);
@@ -177,17 +182,18 @@ Array(0)
         setUserProfile({
           ...userData,
           profileData: {
-            ...userData.profileData,
-            languages: userData.profileData.languages, // Use profileData.languages
+            ...userData?.profileData,
+            languages: userData?.profileData?.languages, // Use profileData.languages
           },
         })
       );
     } catch (error) {
-      toast.error(error?.data?.message || error.error);
+      toast.error(error?.data?.message || error.message || "An error occurred");
     }
   };
   return (
     <div>
+      <Toaster position="right-top" />
       <Formik>
         <Form>
           <h3 className="text-2xl text-white font-semibold tracking-tight">
