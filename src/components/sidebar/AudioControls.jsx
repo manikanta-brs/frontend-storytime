@@ -17,7 +17,7 @@ const AudioControls = ({
       aria-label="Previous"
       onClick={onPrevClick}
     >
-      <Prev className="w-4" />
+      <Prev className="w-6" />
     </button>
     {isPlaying ? (
       <button

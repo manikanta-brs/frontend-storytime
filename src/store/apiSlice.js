@@ -1,7 +1,8 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: "http://localhost:5000", // Make sure the base URL is correct
+  // baseUrl: "http://localhost:5000", // Make sure the base URL is correct
+  baseUrl: "https://backend-storytime-ko0c.onrender.com",
   prepareHeaders: (headers, { getState }) => {
     const state = getState();
     const token = state.auth.token;

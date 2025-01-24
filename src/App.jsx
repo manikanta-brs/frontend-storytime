@@ -15,8 +15,8 @@ import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import EmailVerifyPage from "./pages/EmailVerifyPage";
 import CategoryStoriesPage from "./pages/CategoryStoriesPage";
-import { ToastContainer, toast } from "react-toastify";
-
+// import { ToastContainer } from "react-toastify";
+import { Toaster } from "react-hot-toast";
 import Sidebar from "react-sidebar";
 import SidebarPlayer from "./components/sidebar/SidebarPlayer";
 import { useDispatch, useSelector } from "react-redux";
@@ -102,7 +102,7 @@ function App() {
   }, [refetchSpotifyToken, isLoggedIn]);
   return (
     <>
-      {/* <ToastContainer /> */}
+      <Toaster position="top-right" />
       {/* <button className="mt-8" onClick={showSidebar}>
         Player
       </button> */}

@@ -5,7 +5,8 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { login } from "../store/user/authSlice";
 import { useLoginAPIMutation } from "../store/user/userApiSlice";
-import { toast } from "react-toastify";
+// import { toast } from "react-toastify";
+import toast from "react-hot-toast";
 
 const initialValues = {
   email: "",
@@ -91,10 +92,12 @@ const LoginPage = () => {
                   <h3 className="Auth-form-title py-4 text-center">Sign In</h3>
                   <hr />
                   <div className="form-group mt-3 px-5 py-2 border border-gray-300 rounded-lg mx-5">
-                    <label>Email</label>
+                    <label htmlFor="email">Email</label>
                     <Field
+                      id="email"
                       type="email"
                       name="email"
+                      autoComplete="username"
                       placeholder="Enter your email"
                       className="bg-gray-50 border-0 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block bg-white w-full p-2.5 px-0 outline-0"
                     />
@@ -105,15 +108,17 @@ const LoginPage = () => {
                     />
                   </div>
                   <div className="form-group mt-5 px-5 py-5 border border-gray-300 rounded-lg mx-5">
-                    <label>Password</label>
+                    <label htmlFor="password">Password</label>
                     <Field
                       name="password"
+                      id="password"
                       placeholder="Password"
+                      autoComplete="current-password"
                       type={showPassword ? "password" : "text"}
                       className="bg-gray-50 border-0 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 px-0 bg-white outline-0"
                     />
                     <ErrorMessage
-                      className="err_msg"
+                      className="err_ msg"
                       name="password"
                       component="div"
                     />
@@ -142,6 +147,7 @@ const LoginPage = () => {
                       <div className="flex items-center">
                         <Field
                           name="rememberme"
+                          id="rememberme"
                           type="checkbox"
                           className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
                         />

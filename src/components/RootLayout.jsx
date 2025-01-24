@@ -8,7 +8,7 @@ const RootLayout = () => {
   return (
     <div className="mt-5">
       {isLoggedIn && <NavigationBar />}
-      <ToastContainer limit={1} />
+      {/* <ToastContainer /> */}
       <Outlet />
     </div>
   );

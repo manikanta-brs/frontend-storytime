@@ -2,7 +2,9 @@
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { useUpdatePasswordAPIMutation } from "../../store/user/userApiSlice";
-import { toast } from "react-toastify";
+// import { toast, ToastContainer } from "react-toastify";
+import toast from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
 
 const validationSchema = Yup.object().shape({
   password: Yup.string()
@@ -33,62 +35,69 @@ const UpdatePassword = () => {
   };
 
   return (
-    <Formik
-      initialValues={initialValues}
-      validationSchema={validationSchema}
-      onSubmit={handleSubmit}
-    >
-      {({ isSubmitting }) => (
-        <Form className="max-w-2xl">
-          <br />
-          <h3>Reset Password</h3>
+    <>
+      <Toaster position="top-right" />
+      <Formik
+        initialValues={initialValues}
+        validationSchema={validationSchema}
+        onSubmit={handleSubmit}
+      >
+        {({ isSubmitting }) => (
+          <Form className="max-w-2xl">
+            <br />
+            <h3>Reset Password</h3>
 
-          <div className="mb-8">
-            <label className="text-white text-xs mb-3">New Password</label>
-            <Field
-              type="password"
-              name="password"
-              placeholder="Password"
-              className="border-0 border-b outline-none bg-transparent text-sm py-2 w-full border-opacity-25"
-            />
+            <div className="mb-8">
+              <label className="text-white text-xs mb-3">New Password</label>
+              <Field
+                type="password"
+                name="password"
+                placeholder="Password"
+                className="border-0 border-b outline-none bg-transparent text-sm py-2 w-full border-opacity-25"
+              />
 
-            <ErrorMessage className="err_msg" name="password" component="div" />
-          </div>
+              <ErrorMessage
+                className="err_msg"
+                name="password"
+                component="div"
+              />
+            </div>
 
-          <div className="mb-8">
-            <label className="text-white text-xs mb-3">
-              Confirm New Password
-            </label>
-            <Field
-              type="password"
-              name="confirmPassword"
-              placeholder="Confirm Password"
-              className="border-0 border-b outline-none bg-transparent text-sm py-2 w-full border-opacity-25"
-            />
+            <div className="mb-8">
+              <label className="text-white text-xs mb-3">
+                Confirm New Password
+              </label>
+              <Field
+                type="password"
+                name="confirmPassword"
+                placeholder="Confirm Password"
+                className="border-0 border-b outline-none bg-transparent text-sm py-2 w-full border-opacity-25"
+              />
 
-            <ErrorMessage
-              className="err_msg"
-              name="confirmPassword"
-              component="div"
-            />
-          </div>
+              <ErrorMessage
+                className="err_msg"
+                name="confirmPassword"
+                component="div"
+              />
+            </div>
 
-          <div className="d-grid gap-2 mt-7">
-            <button
-              type="submit"
-              disabled={isLoading}
-              className={`py-2 px-4 btnPurpleColor ${
-                isLoading
-                  ? "bg-blue-400 cursor-not-allowed"
-                  : "bg-blue-500 hover:bg-blue-700 text-white font-bold"
-              }`}
-            >
-              Submit
-            </button>
-          </div>
-        </Form>
-      )}
-    </Formik>
+            <div className="d-grid gap-2 mt-7">
+              <button
+                type="submit"
+                disabled={isLoading}
+                className={`py-2 px-4 btnPurpleColor ${
+                  isLoading
+                    ? "bg-blue-400 cursor-not-allowed"
+                    : "bg-blue-500 hover:bg-blue-700 text-white font-bold"
+                }`}
+              >
+                Submit
+              </button>
+            </div>
+          </Form>
+        )}
+      </Formik>
+    </>
   );
 };
 

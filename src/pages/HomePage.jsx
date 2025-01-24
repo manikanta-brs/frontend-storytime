@@ -7,6 +7,7 @@ import TopStories from "../components/home/TopStories.jsx";
 import { setUserProfile } from "../store/user/authSlice.js";
 import { useGetUserProfileAPIQuery } from "../store/user/userApiSlice.js";
 import { useEffect, useState } from "react";
+// import { ToastContainer } from "react-toastify";
 import {
   useGetPopularShowsQuery,
   useGetShowsOfTheWeekQuery,
@@ -326,6 +327,7 @@ const HomePage = () => {
     // </>
     <>
       <div className="container mx-auto p-2">
+        {/* <ToastContainer /> */}
         <ImageBanner />
         <section>
           <div className="container mx-auto">

@@ -7,7 +7,8 @@ import {
   toggleLanguageSelection,
   setUserProfile,
 } from "../store/user/authSlice"; // Import setUserProfile
-import { toast } from "react-toastify";
+// import { toast } from "react-toastify";
+import toast from "react-hot-toast";
 import { useGetUserProfileAPIQuery } from "../store/user/userApiSlice"; // Import the hook
 import { useEffect } from "react";
 import { useNavigate } from "react-router";

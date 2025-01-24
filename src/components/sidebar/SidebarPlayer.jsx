@@ -4,6 +4,7 @@ import { setStoryInfo, toggleSidebar } from "../../store/user/authSlice";
 import "./sidebar.css";
 import { useState, useEffect, useRef } from "react";
 import toast, { Toaster } from "react-hot-toast";
+// import { toast } from "react-toastify";
 
 import {
   useGetLibraryQuery,
@@ -313,7 +314,7 @@ const SidebarPlayer = ({}) => {
   }, [isPlaying]);
   return (
     <div className="player-bgcolor rounded-xl m-2 px-2 w-96 h-fullCustom flex flex-col">
-      <Toaster position="top-right" />
+      {/* <Toaster position="top-right" /> */}
       <div className="flow-root ml-2 mr-2 mb-5">
         <p
           className="float-left hover:cursor-pointer mt-2"

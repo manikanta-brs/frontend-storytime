@@ -5,9 +5,9 @@ import { useUpdateUserProfileAPIMutation } from "../../store/user/userApiSlice";
 import { updateUserProfile } from "../../store/user/authSlice";
 import { toast, ToastContainer } from "react-toastify";
 import * as Yup from "yup";
-// import toast from "react-hot-toast";
 import { useEffect } from "react";
-
+// import toast from "react-hot-toast";
+// import { Toaster } from "react-hot-toast";
 // Inside the component
 
 const userSchema = Yup.object().shape({
@@ -62,7 +62,6 @@ const Account = () => {
         first_name: values.first_name,
         last_name: values.last_name,
       }).unwrap();
-      console.log(response.message);
       toast.success(response.message);
       // Dispatch updated profile data to Redux
       dispatch(
@@ -79,9 +78,8 @@ const Account = () => {
   };
 
   return (
-    <div>
+    <>
       <ToastContainer />
-
       <Formik
         initialValues={initialValues}
         validationSchema={userSchema}
@@ -158,7 +156,7 @@ const Account = () => {
           </Form>
         )}
       </Formik>
-    </div>
+    </>
   );
 };
 
